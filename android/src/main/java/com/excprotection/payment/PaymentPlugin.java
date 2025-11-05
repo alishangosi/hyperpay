@@ -29,6 +29,7 @@ import com.oppwa.mobile.connect.payment.CheckoutInfo;
 import com.oppwa.mobile.connect.payment.ImagesRequest;
 import com.oppwa.mobile.connect.payment.token.TokenPaymentParams;
 import com.oppwa.mobile.connect.provider.Connect;
+import com.oppwa.mobile.connect.provider.ThreeDSWorkflowListener;
 //import com.oppwa.mobile.connect.provider.ITransactionListener;
 import com.oppwa.mobile.connect.provider.Transaction;
 import com.oppwa.mobile.connect.provider.TransactionType;
@@ -195,9 +196,17 @@ public class PaymentPlugin  implements
 
       paymentProvider = new OppPaymentProvider(activity.getBaseContext(), providerMode);
 
-      //Submit Transaction
-      //Listen for transaction Completed - transaction Failed
-    paymentProvider.submitTransaction(transaction, this);
+        // Ensure ThreeDS workflow listener is provided (SDK requires non-null listener)
+        paymentProvider.setThreeDSWorkflowListener(new ThreeDSWorkflowListener() {
+          @Override
+          public Activity onThreeDSChallengeRequired() {
+            return activity;
+          }
+        });
+
+        //Submit Transaction
+        //Listen for transaction Completed - transaction Failed
+        paymentProvider.submitTransaction(transaction, this);
 
     } catch (PaymentException e) {
       e.printStackTrace();
@@ -262,6 +271,14 @@ public class PaymentPlugin  implements
 
             paymentProvider = new OppPaymentProvider(activity.getBaseContext(), providerMode);
 
+            // Ensure ThreeDS workflow listener is provided (SDK requires non-null listener)
+            paymentProvider.setThreeDSWorkflowListener(new ThreeDSWorkflowListener() {
+              @Override
+              public Activity onThreeDSChallengeRequired() {
+                return activity;
+              }
+            });
+
             //Submit Transaction
             //Listen for transaction Completed - transaction Failed
             paymentProvider.submitTransaction(transaction, this);
@@ -300,6 +317,14 @@ public class PaymentPlugin  implements
 
         //Submit Transaction
         //Listen for transaction Completed - transaction Failed
+        // Ensure ThreeDS workflow listener is provided (SDK requires non-null listener)
+        paymentProvider.setThreeDSWorkflowListener(new ThreeDSWorkflowListener() {
+          @Override
+          public Activity onThreeDSChallengeRequired() {
+            return activity;
+          }
+        });
+
         paymentProvider.submitTransaction(transaction, this);
 
       } catch (PaymentException e) {
